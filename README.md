@@ -1,14 +1,23 @@
-# flutter_sqflite_manager
+# Flutter Sqflite Manager
+To manage your sqflite database in Flutter. 
 
-A new Flutter package project.
+Browse the database's tables, see the rows inside them, empty tables and delete the entire database. 
+Review your tables' columns and the corresponding column type.
 
-## Getting Started
+<table>
+  <tr>
+    <td><img src="https://github.com/mcrovero/flutter_sqflite_manager/raw/master/assets/screen1.png" width="250"></td>
+    <td><img src="https://github.com/mcrovero/flutter_sqflite_manager/raw/master/assets/screen2.png" width="250"></td>
+    <td><img src="https://github.com/mcrovero/flutter_sqflite_manager/raw/master/assets/screen3.png" width="250"></td>
+  </tr>
+</table>
 
-This project is a starting point for a Dart
-[package](https://flutter.dev/developing-packages/),
-a library module containing code that can be shared easily across
-multiple Flutter or Dart projects.
-
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.dev/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+## Get started
+```dart
+SqfliteManager(
+    database: _database,
+    enable: true,
+    child: 
+    ),
+)
+```
