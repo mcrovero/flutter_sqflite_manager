@@ -9,41 +9,28 @@ import 'table_item.dart';
 
 class InitialPage extends StatefulWidget {
   
-  final String path;
+  final Database database;
   final Function deleteDb;
 
-  InitialPage({Key key, this.path, this.deleteDb}) : super(key: key);
+  InitialPage({Key key, this.database, this.deleteDb}) : super(key: key);
 
   _InitialPageState createState() => _InitialPageState();
 }
 
 class _InitialPageState extends State<InitialPage> {
-
-  Database _database;
   
   final _streamController = StreamController<List<TableItem>>();
 
   @override
   void initState() { 
     super.initState();
-    _getDatabase().then((value){
-      _getTables();
-    });
+    
+    _getTables();
   }
 
-  Future<void> _getDatabase() async {
-    if(widget.path == null) {
-      throw "Add a valid path to a database";
-    }
-    if(await databaseExists(widget.path)){
-      _database = await openDatabase(widget.path);
-    } else {
-      throw "Database doesn't exist yet";
-    }
-  }
 
   _getTables() async {
-    var tablesRows = await _database.query('sqlite_master');
+    var tablesRows = await widget.database.query('sqlite_master');
     List<TableItem> tables = [];
     tablesRows.forEach((table){
       if(table['type'] == 'table') {
@@ -67,6 +54,12 @@ class _InitialPageState extends State<InitialPage> {
                   RaisedButton(
                     onPressed: widget.deleteDb,
                     child: Text("Delete database"),
+                  ),
+                  RaisedButton(
+                    onPressed: (){
+                      _getTables();
+                    },
+                    child: Text("Refresh"),
                   )
                 ],
               )
@@ -83,20 +76,11 @@ class _InitialPageState extends State<InitialPage> {
                           onTap: (){
                             Navigator.of(context).push(MaterialPageRoute(
                               builder: (context){
-                                return DataPage(tableName: table.name,database: _database,);
+                                return DataPage(tableName: table.name,database: widget.database, sql:table.sql);
                               }
                             ));
                           },
-                          trailing: IconButton(
-                            onPressed: (){
-                              Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context){
-                                  return StructurePage(sql: table.sql,);
-                                }
-                              ));
-                            },
-                            icon: Icon(Icons.art_track,color: Colors.black,)
-                          ),
+                          trailing: Icon(Icons.art_track,color: Colors.black),
                         );
                       }).toList(),
                     );

@@ -16,15 +16,31 @@ class _StructurePageState extends State<StructurePage> {
     parse = parse.split(")")[0];
     var columns = parse.split(",");
     
-    return Container(
-      color: Colors.white,
-      child: ListView(
-        children: columns.map((column){
-          return ListTile(
-            title: Text(column,style: TextStyle(color: Colors.black)),
-          );
-        }).toList(),
-      ),
+    return Column(
+      children: <Widget>[
+        Expanded(
+          child: Container(
+            color: Colors.white,
+            child: ListView(
+              children: columns.map((column){
+                return ListTile(
+                  title: Text(column.trimLeft(),style: TextStyle(color: Colors.black)),
+                );
+              }).toList(),
+            ),
+          ),
+        ),
+        Container(
+          padding: EdgeInsets.all(20),
+          alignment: Alignment.bottomLeft,
+          child: FloatingActionButton(
+            onPressed: (){
+              Navigator.pop(context);
+            },
+            child: Icon(Icons.arrow_back),
+          ),
+        )
+      ],
     );
   }
 }

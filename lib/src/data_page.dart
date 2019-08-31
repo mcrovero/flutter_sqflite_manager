@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 
+import 'structure_page.dart';
+
 class DataPage extends StatefulWidget {
   
+  final String sql;
   final String tableName;
   final Database database;
 
-  DataPage({Key key, this.tableName, this.database}) : super(key: key);
+  DataPage({Key key, this.tableName, this.database, this.sql}) : super(key: key);
 
   _DataPageState createState() => _DataPageState();
 }
@@ -17,6 +20,7 @@ class _DataPageState extends State<DataPage> {
   void initState() {
     super.initState();
     _getData();
+    _getColumns();
   }
 
   FSMDataSource _dataSource = FSMDataSource();
@@ -27,10 +31,7 @@ class _DataPageState extends State<DataPage> {
     widget.database.query(widget.tableName).then((rows){
       if(rows.length > 0) {
         List<List<String>> list = [];
-        _columns.clear();
-        _columns.addAll(rows[0].keys.map((key){
-          return DataColumn(label: Text(key));
-        }).toList());
+        
         rows.forEach((row){
           list.add(row.values.map((value)=>value.toString()).toList());
         });
@@ -42,6 +43,16 @@ class _DataPageState extends State<DataPage> {
         
       });
     });
+  }
+
+  _getColumns(){
+    var parse = widget.sql.split("(")[1];
+    parse = parse.split(")")[0];
+    var columns = parse.split(",");
+    _columns.clear();
+    _columns.addAll(columns.map((key){
+      return DataColumn(label: Text(key.trimLeft().split(' ').first));
+    }).toList());
   }
 
   @override
@@ -75,6 +86,16 @@ class _DataPageState extends State<DataPage> {
                         _getData();
                       },
                       child: Text("Refresh"),
+                    ),
+                    RaisedButton(
+                      onPressed: (){
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context){
+                            return StructurePage(sql: widget.sql);
+                          }
+                        ));
+                      },
+                      child: Text("Structure"),
                     )
                   ],
                 )

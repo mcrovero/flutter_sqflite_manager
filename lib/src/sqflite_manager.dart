@@ -8,9 +8,10 @@ class SqfliteManager extends StatefulWidget {
   final bool enable;
   final Widget child;
   final Alignment iconAlignment;
-  final String path;
+  final Database database;
+  final Function onDatabaseDeleted;
 
-  SqfliteManager({Key key, @required this.child, this.enable = true, this.iconAlignment = Alignment.bottomRight, @required this.path}) : super(key: key);
+  SqfliteManager({Key key, @required this.child, this.enable = true, this.iconAlignment = Alignment.bottomRight, @required this.database, this.onDatabaseDeleted}) : super(key: key);
 
   _SqfliteManagerState createState() => _SqfliteManagerState();
 }
@@ -18,30 +19,21 @@ class SqfliteManager extends StatefulWidget {
 class _SqfliteManagerState extends State<SqfliteManager> {
 
   bool _showContent = false;
-  bool _databaseExists = false;
 
   @override
   void initState() { 
     super.initState();
-    _checkDbExists();
-  }
-
-  _checkDbExists() async {
-    var dbExists = await databaseExists(widget.path);
-    setState(() {
-      _databaseExists = dbExists;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    if(!widget.enable)
+    if(!widget.enable || widget.database == null)
       return widget.child;
     return Scaffold(
       body: Stack(
         children: <Widget>[
           widget.child,
-          _databaseExists ? Offstage(
+          Offstage(
             offstage: !_showContent,
             child: Navigator(
               initialRoute: 'root',
@@ -50,12 +42,16 @@ class _SqfliteManagerState extends State<SqfliteManager> {
                   return MaterialPageRoute(
                     builder: (context) {
                       return InitialPage(
+                        database: widget.database,
                         deleteDb: (){
-                          deleteDatabase(widget.path).then((value){
-                            _checkDbExists();
+                          var path = widget.database.path;
+                          deleteDatabase(path).then((value){
+                            widget.database.close();
+                            setState(() {
+                              
+                            });
                           });
                         },
-                        path: widget.path,
                       );
                     }
                   );
@@ -63,8 +59,8 @@ class _SqfliteManagerState extends State<SqfliteManager> {
                 return null;
               },
             ),
-          ) : Container(),
-          _databaseExists ? Container(
+          ),
+          Container(
             margin: EdgeInsets.all(20),
             alignment: widget.iconAlignment,
             child: FloatingActionButton(
@@ -75,17 +71,7 @@ class _SqfliteManagerState extends State<SqfliteManager> {
                 });
               },
             ),
-          ) : 
-          Container(
-            margin: EdgeInsets.all(20),
-            alignment: widget.iconAlignment,
-            child: FloatingActionButton(
-              child: Icon(Icons.refresh),
-              onPressed: (){
-                _checkDbExists();
-              },
-            ),
-          )
+          ) 
         ],
       ),
     );
