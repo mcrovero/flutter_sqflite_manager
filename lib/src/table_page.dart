@@ -3,18 +3,18 @@ import 'package:sqflite/sqflite.dart';
 
 import 'structure_page.dart';
 
-class DataPage extends StatefulWidget {
+class TablePage extends StatefulWidget {
   
   final String sql;
   final String tableName;
   final Database database;
 
-  DataPage({Key key, this.tableName, this.database, this.sql}) : super(key: key);
+  TablePage({Key key, this.tableName, this.database, this.sql}) : super(key: key);
 
-  _DataPageState createState() => _DataPageState();
+  _TablePageState createState() => _TablePageState();
 }
 
-class _DataPageState extends State<DataPage> {
+class _TablePageState extends State<TablePage> {
 
   @override
   void initState() {

@@ -1,23 +1,22 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_sqflite_manager/src/table_page.dart';
 import 'package:sqflite/sqflite.dart';
 
-import 'data_page.dart';
-import 'structure_page.dart';
 import 'table_item.dart';
 
-class InitialPage extends StatefulWidget {
+class TablesPage extends StatefulWidget {
   
   final Database database;
-  final Function deleteDb;
+  final Function onDatabaseDeleted;
 
-  InitialPage({Key key, this.database, this.deleteDb}) : super(key: key);
+  TablesPage({Key key, this.database, this.onDatabaseDeleted}) : super(key: key);
 
-  _InitialPageState createState() => _InitialPageState();
+  _TablesPageState createState() => _TablesPageState();
 }
 
-class _InitialPageState extends State<InitialPage> {
+class _TablesPageState extends State<TablesPage> {
   
   final _streamController = StreamController<List<TableItem>>();
 
@@ -29,15 +28,19 @@ class _InitialPageState extends State<InitialPage> {
   }
 
 
-  _getTables() async {
-    var tablesRows = await widget.database.query('sqlite_master');
-    List<TableItem> tables = [];
-    tablesRows.forEach((table){
-      if(table['type'] == 'table') {
-        tables.add(TableItem(table['name'],table['sql']));
-      }
-    });
-    _streamController.sink.add(tables);
+  Future<void> _getTables() async {
+    if(widget.database.isOpen) {
+      var tablesRows = await widget.database.query('sqlite_master');
+      List<TableItem> tables = [];
+      tablesRows.forEach((table){
+        if(table['type'] == 'table') {
+          tables.add(TableItem(table['name'],table['sql']));
+        }
+      });
+      _streamController.sink.add(tables);
+    } else {
+      print("database closed");
+    }
   }
 
   @override
@@ -52,7 +55,13 @@ class _InitialPageState extends State<InitialPage> {
               child: Row(
                 children: <Widget>[
                   RaisedButton(
-                    onPressed: widget.deleteDb,
+                    onPressed: (){
+                      var path = widget.database.path;
+                      deleteDatabase(path).then((value){
+                        _streamController.sink.add([]);
+                        widget.database.close();
+                      });
+                    },
                     child: Text("Delete database"),
                   ),
                   RaisedButton(
@@ -76,7 +85,7 @@ class _InitialPageState extends State<InitialPage> {
                           onTap: (){
                             Navigator.of(context).push(MaterialPageRoute(
                               builder: (context){
-                                return DataPage(tableName: table.name,database: widget.database, sql:table.sql);
+                                return TablePage(tableName: table.name,database: widget.database, sql:table.sql);
                               }
                             ));
                           },

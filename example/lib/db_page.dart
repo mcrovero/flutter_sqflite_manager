@@ -67,6 +67,7 @@ class _DbPageState extends State<DbPage> {
       onCreate: (Database db, int version) async {
         // When creating the db, create the table
         await db.execute('CREATE TABLE Test (id INTEGER PRIMARY KEY, value TEXT, name TEXT, surname TEXT)');
+        await db.execute('CREATE TABLE OtherTable (id INTEGER PRIMARY KEY, value TEXT, name TEXT, surname TEXT)');
       }
     );
   }

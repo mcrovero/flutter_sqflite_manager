@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_sqflite_manager/src/tables_page.dart';
 import 'package:sqflite/sqflite.dart';
-
-import 'initial_page.dart';
 
 class SqfliteManager extends StatefulWidget {
 
+  /// If set false the widget is disabled and the icon is not displayed (e.g. in production).
   final bool enable;
+  /// Contains the app itsel
   final Widget child;
+  /// Indicates the icon position of the manager
   final Alignment iconAlignment;
+  /// To pass the app's database to the manager
   final Database database;
+  /// Called when the database is deleted inside the manager
   final Function onDatabaseDeleted;
 
   SqfliteManager({Key key, @required this.child, this.enable = true, this.iconAlignment = Alignment.bottomRight, @required this.database, this.onDatabaseDeleted}) : super(key: key);
@@ -19,11 +23,6 @@ class SqfliteManager extends StatefulWidget {
 class _SqfliteManagerState extends State<SqfliteManager> {
 
   bool _showContent = false;
-
-  @override
-  void initState() { 
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,17 +40,9 @@ class _SqfliteManagerState extends State<SqfliteManager> {
                 if(settings.name == 'root'){
                   return MaterialPageRoute(
                     builder: (context) {
-                      return InitialPage(
+                      return TablesPage(
                         database: widget.database,
-                        deleteDb: (){
-                          var path = widget.database.path;
-                          deleteDatabase(path).then((value){
-                            widget.database.close();
-                            setState(() {
-                              
-                            });
-                          });
-                        },
+                        onDatabaseDeleted: widget.onDatabaseDeleted,
                       );
                     }
                   );
