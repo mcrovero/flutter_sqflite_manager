@@ -8,8 +8,9 @@ class TablePage extends StatefulWidget {
   final String sql;
   final String tableName;
   final Database database;
+  final int rowsPerPage;
 
-  TablePage({Key key, this.tableName, this.database, this.sql}) : super(key: key);
+  TablePage({Key key, this.tableName, this.database, this.sql, this.rowsPerPage}) : super(key: key);
 
   _TablePageState createState() => _TablePageState();
 }
@@ -102,12 +103,15 @@ class _TablePageState extends State<TablePage> {
               ),
               Expanded(
                 child: Container(
-                  child: _columns.isNotEmpty ? PaginatedDataTable(
-                    rowsPerPage: 6,
-                    columns: _columns,
-                    header: Text(widget.tableName),
-                    source: _dataSource,
-                  ) : Container(),
+                  child: SingleChildScrollView(
+                    physics: ClampingScrollPhysics(),
+                    child: _columns.isNotEmpty ? PaginatedDataTable(
+                      rowsPerPage: widget.rowsPerPage,
+                      columns: _columns,
+                      header: Text(widget.tableName),
+                      source: _dataSource,
+                    ) : Container(),
+                  ),
                 )
               ),
               Container(

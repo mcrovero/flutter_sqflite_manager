@@ -1,4 +1,4 @@
-/// Rubber Model
+/// Flutter Sqflite Manager Model
 ///
 /// To use, `import 'package:flutter_sqflite_manager/flutter_sqflite_manager.dart';`.
 library flutter_sqflite_manager;

@@ -14,8 +14,10 @@ class SqfliteManager extends StatefulWidget {
   final Database database;
   /// Called when the database is deleted inside the manager
   final Function onDatabaseDeleted;
+  /// Set the number of rows visible per each page in order to avoid scrolling
+  final int rowsPerPage;
 
-  SqfliteManager({Key key, @required this.child, this.enable = true, this.iconAlignment = Alignment.bottomRight, @required this.database, this.onDatabaseDeleted}) : super(key: key);
+  SqfliteManager({Key key, @required this.child, this.enable = true, this.iconAlignment = Alignment.bottomRight, @required this.database, this.onDatabaseDeleted, this.rowsPerPage = 6}) : super(key: key);
 
   _SqfliteManagerState createState() => _SqfliteManagerState();
 }
@@ -43,6 +45,7 @@ class _SqfliteManagerState extends State<SqfliteManager> {
                       return TablesPage(
                         database: widget.database,
                         onDatabaseDeleted: widget.onDatabaseDeleted,
+                        rowsPerPage: widget.rowsPerPage,
                       );
                     }
                   );

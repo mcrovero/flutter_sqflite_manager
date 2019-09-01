@@ -10,8 +10,9 @@ class TablesPage extends StatefulWidget {
   
   final Database database;
   final Function onDatabaseDeleted;
+  final int rowsPerPage;
 
-  TablesPage({Key key, this.database, this.onDatabaseDeleted}) : super(key: key);
+  TablesPage({Key key, this.database, this.onDatabaseDeleted, this.rowsPerPage}) : super(key: key);
 
   _TablesPageState createState() => _TablesPageState();
 }
@@ -85,7 +86,7 @@ class _TablesPageState extends State<TablesPage> {
                           onTap: (){
                             Navigator.of(context).push(MaterialPageRoute(
                               builder: (context){
-                                return TablePage(tableName: table.name,database: widget.database, sql:table.sql);
+                                return TablePage(tableName: table.name,database: widget.database, sql:table.sql, rowsPerPage: widget.rowsPerPage,);
                               }
                             ));
                           },
