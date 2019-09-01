@@ -1,3 +1,4 @@
+import 'package:example/your_app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sqflite_manager/flutter_sqflite_manager.dart';
 import 'package:sqflite/sqflite.dart';
@@ -12,8 +13,6 @@ class _DbPageState extends State<DbPage> {
 
   Database database;
 
-  final TextEditingController _textEditingController = TextEditingController(text:"Test");
-
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<Database>(
@@ -22,31 +21,10 @@ class _DbPageState extends State<DbPage> {
         if(snapshot.hasData) {
           return SqfliteManager(
             database: snapshot.data,
-            onDatabaseDeleted: (){
-
-            },
             enable: true,
-            child: Container(
-              padding: EdgeInsets.all(20),
-              color: Colors.white,
-              alignment: Alignment.center,
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Container(
-                      margin: EdgeInsets.only(right:20),
-                      child: TextField(controller: _textEditingController)
-                    )
-                  ),
-                  RaisedButton(
-                    onPressed: (){
-                      _addRow(_textEditingController.text);
-                    },
-                    child: Text("Add row"),
-                  ),
-                ],
-              ),
-            ),
+            child: YourApp(
+              database: snapshot.data,
+            )
           );
         } else {
           return Container(
@@ -72,15 +50,4 @@ class _DbPageState extends State<DbPage> {
     );
   }
 
-  _addRow(String value) async {
-    try {
-      await (await _getDatabase()).insert('Test', {
-        'value': value ?? 'Test',
-        'name': 'John',
-        'surname': 'Doe'
-      });
-    } catch(e) {
-      print(e);
-    }
-  }
 }
