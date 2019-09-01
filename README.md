@@ -14,7 +14,7 @@ Review your tables' columns and the corresponding column type.
 
 ## Get started
 Wrap your app with SqfliteManager passing the sqflite database as parameter. 
-Usually the database is of Future<Database>, check the <a href="https://github.com/mcrovero/flutter_sqflite_manager/tree/master/example">example</a> to see a FutureBuilder implementation.
+Usually the database is of ```dart Future<Database>```, check the <a href="https://github.com/mcrovero/flutter_sqflite_manager/tree/master/example">example</a> to see a FutureBuilder implementation.
 Use the enable parameter to switch between testing and production.
 ```dart
 SqfliteManager(
