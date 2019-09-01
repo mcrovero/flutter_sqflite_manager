@@ -1,3 +1,4 @@
-## [0.0.1] - 30/09/2019.
+## [0.1.0] - 01/09/2019.
 
 * Initial version
+* Fixed error version
