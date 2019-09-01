@@ -19,6 +19,8 @@ Use the enable parameter to switch between testing and production.
 ```dart
 SqfliteManager(
     database: _database,
+    // Update rowsPerPage parameter to avoid scrolling in different screen sizes
+    rowsPerPage: 6
     enable: true,
     child: YourApp()
 )
