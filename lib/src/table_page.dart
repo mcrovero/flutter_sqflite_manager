@@ -51,10 +51,10 @@ class _TablePageState extends State<TablePage> {
 
   _getColumns() async {
     print(this.tableName);
-    var data = widget.database.rawQuery(
+    var rows = widget.database.rawQuery(
         "select group_concat(name, '|') from pragma_table_info('${this.tableName}')");
-    var test = await data;
-    var columnsString = test
+    var cleanedRows = await rows;
+    var columnsString = cleanedRows
         .toString()
         .replaceAll("[{group_concat(name, '|'): ", "")
         .replaceAll("}]", "");
