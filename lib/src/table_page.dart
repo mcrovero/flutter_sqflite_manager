@@ -4,18 +4,23 @@ import 'package:sqflite/sqflite.dart';
 import 'structure_page.dart';
 
 class TablePage extends StatefulWidget {
-  
   final String sql;
   final String tableName;
   final Database database;
   final int rowsPerPage;
 
-  TablePage({Key key, this.tableName, this.database, this.sql, this.rowsPerPage}) : super(key: key);
+  TablePage(
+      {Key key, this.tableName, this.database, this.sql, this.rowsPerPage})
+      : super(key: key);
 
-  _TablePageState createState() => _TablePageState();
+  _TablePageState createState() => _TablePageState(this.tableName);
 }
 
 class _TablePageState extends State<TablePage> {
+  String tableName;
+  _TablePageState(String tableName) {
+    this.tableName = tableName;
+  }
 
   @override
   void initState() {
@@ -29,29 +34,32 @@ class _TablePageState extends State<TablePage> {
   List<DataColumn> _columns = [];
 
   _getData() {
-    widget.database.query(widget.tableName).then((rows){
-      if(rows.length > 0) {
+    widget.database.query(widget.tableName).then((rows) {
+      if (rows.length > 0) {
         List<List<String>> list = [];
-        
-        rows.forEach((row){
-          list.add(row.values.map((value)=>value.toString()).toList());
+
+        rows.forEach((row) {
+          list.add(row.values.map((value) => value.toString()).toList());
         });
         _dataSource.addData(list);
       } else {
         _dataSource.addData([]);
       }
-      setState(() {
-        
-      });
+      setState(() {});
     });
   }
 
-  _getColumns(){
-    var parse = widget.sql.split("(")[1];
-    parse = parse.split(")")[0];
-    var columns = parse.split(",");
-    _columns.clear();
-    _columns.addAll(columns.map((key){
+  _getColumns() async {
+    print(this.tableName);
+    var rows = widget.database.rawQuery(
+        "select group_concat(name, '|') from pragma_table_info('${this.tableName}')");
+    var cleanedRows = await rows;
+    var columnsString = cleanedRows
+        .toString()
+        .replaceAll("[{group_concat(name, '|'): ", "")
+        .replaceAll("}]", "");
+    var column = columnsString.toString().split("|");
+    _columns.addAll(column.map((key) {
       return DataColumn(label: Text(key.trimLeft().split(' ').first));
     }).toList());
   }
@@ -71,54 +79,55 @@ class _TablePageState extends State<TablePage> {
           child: Column(
             children: <Widget>[
               Container(
-                padding: EdgeInsets.all(10),
-                child: Row(
-                  children: <Widget>[
-                    RaisedButton(
-                      onPressed: (){
-                        widget.database.delete(widget.tableName).then((value){
+                  padding: EdgeInsets.all(10),
+                  child: Row(
+                    children: <Widget>[
+                      RaisedButton(
+                        onPressed: () {
+                          widget.database
+                              .delete(widget.tableName)
+                              .then((value) {
+                            _getData();
+                          });
+                        },
+                        child: Text("Clear table"),
+                      ),
+                      RaisedButton(
+                        onPressed: () {
                           _getData();
-                        });
-                      },
-                      child: Text("Clear table"),
-                    ),
-                    RaisedButton(
-                      onPressed: (){
-                        _getData();
-                      },
-                      child: Text("Refresh"),
-                    ),
-                    RaisedButton(
-                      onPressed: (){
-                        Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context){
+                        },
+                        child: Text("Refresh"),
+                      ),
+                      RaisedButton(
+                        onPressed: () {
+                          Navigator.of(context)
+                              .push(MaterialPageRoute(builder: (context) {
                             return StructurePage(sql: widget.sql);
-                          }
-                        ));
-                      },
-                      child: Text("Structure"),
-                    )
-                  ],
-                )
-              ),
+                          }));
+                        },
+                        child: Text("Structure"),
+                      )
+                    ],
+                  )),
               Expanded(
-                child: Container(
-                  child: SingleChildScrollView(
-                    physics: ClampingScrollPhysics(),
-                    child: _columns.isNotEmpty ? PaginatedDataTable(
-                      rowsPerPage: widget.rowsPerPage,
-                      columns: _columns,
-                      header: Text(widget.tableName),
-                      source: _dataSource,
-                    ) : Container(),
-                  ),
-                )
-              ),
+                  child: Container(
+                child: SingleChildScrollView(
+                  physics: ClampingScrollPhysics(),
+                  child: _columns.isNotEmpty
+                      ? PaginatedDataTable(
+                          rowsPerPage: widget.rowsPerPage,
+                          columns: _columns,
+                          header: Text(widget.tableName),
+                          source: _dataSource,
+                        )
+                      : Container(),
+                ),
+              )),
               Container(
                 padding: EdgeInsets.all(20),
                 alignment: Alignment.bottomLeft,
                 child: FloatingActionButton(
-                  onPressed: (){
+                  onPressed: () {
                     Navigator.pop(context);
                   },
                   child: Icon(Icons.arrow_back),
@@ -130,11 +139,9 @@ class _TablePageState extends State<TablePage> {
       ),
     );
   }
-
 }
 
 class FSMDataSource extends DataTableSource {
-
   List<List<String>> _data = [];
 
   addData(List<List<String>> data) {
@@ -146,10 +153,9 @@ class FSMDataSource extends DataTableSource {
   @override
   DataRow getRow(int index) {
     return DataRow(
-      cells: _data[index].map((cell){
-        return DataCell(Text(cell));
-      }).toList()
-    );
+        cells: _data[index].map((cell) {
+      return DataCell(Text(cell));
+    }).toList());
   }
 
   @override
@@ -160,5 +166,4 @@ class FSMDataSource extends DataTableSource {
 
   @override
   int get selectedRowCount => 0;
-
 }
