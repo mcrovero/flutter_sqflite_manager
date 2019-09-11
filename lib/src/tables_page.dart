@@ -7,7 +7,7 @@ import 'package:sqflite/sqflite.dart';
 import 'table_item.dart';
 
 class TablesPage extends StatefulWidget {
-  
+
   final Database database;
   final Function onDatabaseDeleted;
   final int rowsPerPage;
@@ -18,26 +18,36 @@ class TablesPage extends StatefulWidget {
 }
 
 class _TablesPageState extends State<TablesPage> {
-  
+
   final _streamController = StreamController<List<TableItem>>();
 
   @override
-  void initState() { 
+  void initState() {
     super.initState();
-    
+
     _getTables();
   }
 
-
+  /// Query 'sqlite_master' to retrive information about all the tables
+  /// in a database.
+  ///
+  /// 'sqlite_master' is a table that stores information about all the
+  /// tables created in a database. It has the following schema:
+  /// - type: TEXT
+  /// - name: TEXT
+  /// - tbl_name: TEXT
+  /// - rootpage: INTEGER
+  /// - sql: TEXT
   Future<void> _getTables() async {
-    if(widget.database.isOpen) {
-      var tablesRows = await widget.database.query('sqlite_master');
-      List<TableItem> tables = [];
-      tablesRows.forEach((table){
-        if(table['type'] == 'table') {
-          tables.add(TableItem(table['name'],table['sql']));
-        }
-      });
+    if (widget.database.isOpen) {
+      var tablesRows = await widget.database.query(
+        'sqlite_master',
+        where: 'type = ?',
+        whereArgs: ['table'],
+      );
+      final tables = tablesRows
+          .map((table) => TableItem(table['name'], table['sql']))
+          .toList();
       _streamController.sink.add(tables);
     } else {
       print("database closed");
@@ -107,7 +117,7 @@ class _TablesPageState extends State<TablesPage> {
   }
 
   @override
-  void dispose() { 
+  void dispose() {
     _streamController.close();
     super.dispose();
   }
