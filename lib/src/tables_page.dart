@@ -7,18 +7,17 @@ import 'package:sqflite/sqflite.dart';
 import 'table_item.dart';
 
 class TablesPage extends StatefulWidget {
-
   final Database database;
   final Function onDatabaseDeleted;
   final int rowsPerPage;
 
-  TablesPage({Key key, this.database, this.onDatabaseDeleted, this.rowsPerPage}) : super(key: key);
+  TablesPage({Key key, this.database, this.onDatabaseDeleted, this.rowsPerPage})
+      : super(key: key);
 
   _TablesPageState createState() => _TablesPageState();
 }
 
 class _TablesPageState extends State<TablesPage> {
-
   final _streamController = StreamController<List<TableItem>>();
 
   @override
@@ -62,45 +61,49 @@ class _TablesPageState extends State<TablesPage> {
         child: Column(
           children: <Widget>[
             Container(
-              padding: EdgeInsets.all(10),
-              child: Row(
-                children: <Widget>[
-                  RaisedButton(
-                    onPressed: (){
-                      var path = widget.database.path;
-                      deleteDatabase(path).then((value){
-                        _streamController.sink.add([]);
-                        widget.database.close();
-                      });
-                    },
-                    child: Text("Delete database"),
-                  ),
-                  RaisedButton(
-                    onPressed: (){
-                      _getTables();
-                    },
-                    child: Text("Refresh"),
-                  )
-                ],
-              )
-            ),
+                padding: EdgeInsets.all(10),
+                child: Row(
+                  children: <Widget>[
+                    RaisedButton(
+                      onPressed: () {
+                        var path = widget.database.path;
+                        deleteDatabase(path).then((value) {
+                          _streamController.sink.add([]);
+                          widget.database.close();
+                        });
+                      },
+                      child: Text("Delete database"),
+                    ),
+                    RaisedButton(
+                      onPressed: () {
+                        _getTables();
+                      },
+                      child: Text("Refresh"),
+                    )
+                  ],
+                )),
             Expanded(
               child: StreamBuilder<List<TableItem>>(
                 stream: _streamController.stream,
-                builder: (context, snapshot){
-                  if(snapshot.hasData) {
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
                     return ListView(
-                      children: snapshot.data.map((table){
+                      children: snapshot.data.map((table) {
                         return ListTile(
-                          title: Text(table.name,style: TextStyle(color: Colors.black)),
-                          onTap: (){
-                            Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context){
-                                return TablePage(tableName: table.name,database: widget.database, sql:table.sql, rowsPerPage: widget.rowsPerPage,);
-                              }
-                            ));
+                          title: Text(table.name,
+                              style: TextStyle(color: Colors.black)),
+                          onTap: () {
+                            Navigator.of(context)
+                                .push(MaterialPageRoute(builder: (context) {
+                              return TablePage(
+                                tableName: table.name,
+                                database: widget.database,
+                                sql: table.sql,
+                                rowsPerPage: widget.rowsPerPage,
+                              );
+                            }));
                           },
-                          trailing: Icon(Icons.art_track,color: Colors.black),
+                          trailing: Icon(Icons.art_track, color: Colors.black),
                         );
                       }).toList(),
                     );
