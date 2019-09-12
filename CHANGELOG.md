@@ -1,7 +1,7 @@
-## [1.1.1] - 12/09/2019.
+## [0.1.1] - 12/09/2019.
 
-* Fixed Bug in Table View
-* Code Optimization
+* Fixed bug in table view
+* Code optimization
 
 
 ## [0.1.0] - 01/09/2019.
