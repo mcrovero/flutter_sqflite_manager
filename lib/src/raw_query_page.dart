@@ -68,24 +68,28 @@ class _RawQueryPageState extends State<RawQueryPage> {
         iconTheme: IconThemeData(color: Colors.black),
         elevation: 0.0,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: <Widget>[
-            TextField(
-              controller: _sqlQueryController,
-              decoration: InputDecoration(
-                hintText: "SQL Query",
-                border: OutlineInputBorder(),
-              ),
+      body: _buildBody(),
+    );
+  }
+
+  Widget _buildBody() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: <Widget>[
+          TextField(
+            controller: _sqlQueryController,
+            decoration: InputDecoration(
+              hintText: "SQL Query",
+              border: OutlineInputBorder(),
             ),
-            _buildCommandBar(),
-            SizedBox(height: 16.0),
-            Expanded(
-              child: _buildResult(),
-            ),
-          ],
-        ),
+          ),
+          _buildCommandBar(),
+          SizedBox(height: 16.0),
+          Expanded(
+            child: _buildResult(),
+          ),
+        ],
       ),
     );
   }
@@ -118,7 +122,7 @@ class _RawQueryPageState extends State<RawQueryPage> {
           return DataColumn(label: Text(key));
         }).toList(),
         header: Text('Result'),
-        source: TableSource(_result),
+        source: _DBDataTableSource(_result),
         rowsPerPage: this.widget.rowsPerPage ?? 6,
       ),
     );
@@ -170,10 +174,10 @@ class _RawQueryPageState extends State<RawQueryPage> {
   }
 }
 
-class TableSource extends DataTableSource {
+class _DBDataTableSource extends DataTableSource {
   final List<Map<String, dynamic>> _data;
 
-  TableSource(this._data);
+  _DBDataTableSource(this._data);
 
   @override
   DataRow getRow(int index) {
