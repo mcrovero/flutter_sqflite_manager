@@ -88,6 +88,7 @@ class _TablesPageState extends State<TablesPage> {
                             builder: (context) {
                               return RawQueryPage(
                                 database: widget.database,
+                                rowsPerPage: widget.rowsPerPage,
                               );
                             },
                           ),
