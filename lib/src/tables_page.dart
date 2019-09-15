@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_sqflite_manager/src/raw_query_page.dart';
 import 'package:flutter_sqflite_manager/src/table_page.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -79,7 +80,22 @@ class _TablesPageState extends State<TablesPage> {
                         _getTables();
                       },
                       child: Text("Refresh"),
-                    )
+                    ),
+                    RaisedButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return RawQueryPage(
+                                database: widget.database,
+                                rowsPerPage: widget.rowsPerPage,
+                              );
+                            },
+                          ),
+                        );
+                      },
+                      child: Text("Raw Query"),
+                    ),
                   ],
                 )),
             Expanded(
