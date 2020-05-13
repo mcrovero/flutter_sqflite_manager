@@ -1,7 +1,9 @@
 name: flutter_sqflite_manager
 description: A flutter plugin to visually manage your sqflite database.
-version: 0.1.1
-author: Mattia Crovero <mcrovero@gmail.com>, Artur Hoffmann <artur.hoffmann@protonmail.com>
+version: 0.1.2
+authors:
+  - Artur Hoffmann <artur.hoffmann@protonmail.com>
+  - Mattia Crovero <mcrovero@gmail.com>
 homepage: https://github.com/mcrovero/flutter_sqflite_manager
 
 environment:
@@ -11,7 +13,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  sqflite: ^1.1.6+4
+  sqflite: ^1.3.0+1
 
 dev_dependencies:
   flutter_test:
